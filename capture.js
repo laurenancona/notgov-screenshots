@@ -11,8 +11,8 @@ var fs = require("fs"),
     colors = require("colors");
 
 // inputs
-var CSV_URL = "https://gsa.github.io/data/dotgov-domains/2014-12-01-full.csv",
-    DOMAIN_COLUMN = "Domain Name",
+var CSV_URL = "https://raw.githubusercontent.com/laurenancona/notgov-screenshots/master/resources/Known_Registered_Domains.csv",
+    DOMAIN_COLUMN = "domain",
     SIZE = "1280x600",
     OPTIONS = {delay: .1},
     OUTDIR = "screenshots",
@@ -34,9 +34,11 @@ writer.pipe(output);
 /*
  * XXX remove me
  */
+
 function filter(row) {
-  return row["Domain Type"] === "Federal Agency";
+  return row["Domain Type"] === "Agency";
 }
+
 
 function queue(row) {
   var domain = row[DOMAIN_COLUMN].toLowerCase(),
@@ -66,7 +68,7 @@ function end() {
       return next(null, task);
     }
 
-    // console.log("( ) capturing %s ...", task.domain);
+    console.log("( ) capturing %s ...", task.domain);
 
     var image = fs.createWriteStream(task.image),
         written = false,
@@ -74,7 +76,7 @@ function end() {
         time = Date.now(),
         shot = screenshot(task.url, SIZE, OPTIONS)
           .on("warn", function(warning) {
-            // console.warn("warning:", warning);
+            console.warn("warning:", warning);
           })
           .once("error", function(error) {
             task.error = ellipses(error, 24);
